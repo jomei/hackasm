@@ -72,10 +72,12 @@ mod tests {
         assert!(get_c().is_c());
     }
 
+    #[test]
     fn c_symbol() {
         assert_eq!(get_c().c_symbol(), "LOOP");
     }
 
+    #[test]
     fn is_symbol() {
         assert!(get_a().is_symbol());
         assert!(get_c().is_symbol());
