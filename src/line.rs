@@ -1,25 +1,27 @@
 pub struct Line {
-    inner: String
+    inner: String,
+    number: usize
 }
 
 impl Line {
     const A_MARKER: char = '@';
-    const C_MARKER: char = '(';
+    const LABEL_MARKER: char = '(';
 
-    pub fn new(str: String) -> Self {
-        Line{ inner: str }
+    pub fn new(str: String, line_number: usize) -> Self {
+        Line{ inner: str, number: line_number }
     }
 
     pub fn is_a(&self) -> bool {
-        return self.inner.starts_with(Line::A_MARKER)
+        return self.inner.starts_with(Line::A_MARKER) &&
+            self.inner.to_uppercase() != self.inner // TODO: check if string is lowcase, should be simplified
     }
 
-    pub fn is_c(&self) -> bool {
-        return self.inner.starts_with(Line::C_MARKER)
+    pub fn is_label(&self) -> bool {
+        return self.inner.starts_with(Line::LABEL_MARKER)
     }
 
     pub fn is_symbol(&self) -> bool {
-        return self.is_a() || self.is_c()
+        return self.is_a() || self.is_label()
     }
 
     pub fn symbol(&self) -> Option<String> {
@@ -30,7 +32,7 @@ impl Line {
         if self.is_a() {
             return Some(self.a_symbol())
         } else {
-            return Some(self.c_symbol())
+            return Some(self.label_symbol())
         }
     }
 
@@ -38,9 +40,9 @@ impl Line {
         return self.inner.chars().skip(1).collect()
     }
 
-    fn c_symbol(&self) -> String {
+    fn label_symbol(&self) -> String {
         return self.inner
-            .split(|c| c == Line::C_MARKER || c == ')')
+            .split(|c| c == Line::LABEL_MARKER || c == ')')
             .collect()
     }
 }
@@ -50,7 +52,7 @@ mod tests {
     use super::*;
 
     fn get_a() -> Line {
-        return Line::new("@R1".to_string())
+        return Line::new("@R1".to_string(), 0)
     }
 
     #[test]
@@ -64,17 +66,17 @@ mod tests {
     }
 
     fn get_c() -> Line {
-        return Line::new("(LOOP)".to_string());
+        return Line::new("(LOOP)".to_string(), 0);
     }
 
     #[test]
-    fn is_c() {
-        assert!(get_c().is_c());
+    fn is_label() {
+        assert!(get_c().is_label());
     }
 
     #[test]
-    fn c_symbol() {
-        assert_eq!(get_c().c_symbol(), "LOOP");
+    fn label_symbol() {
+        assert_eq!(get_c().label_symbol(), "LOOP");
     }
 
     #[test]

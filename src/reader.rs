@@ -11,6 +11,7 @@ pub fn call<R: Read>(content: R) -> Vec<Line> {
         .lines()
         .map(|l| l.expect("Could not parse line").trim().to_string())
         .filter(|l| l.is_empty() || l.starts_with("//"))
-        .map(|l| Line::new(l))
+        .enumerate()
+        .map(|(i, line)| Line::new(line, i))
         .collect();
 }
