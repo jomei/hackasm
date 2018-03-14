@@ -1,6 +1,6 @@
 pub struct Line {
     inner: String,
-    number: usize
+    pub number: usize
 }
 
 impl Line {
