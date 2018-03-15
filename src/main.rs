@@ -3,7 +3,7 @@
 * 1. +cli
 * 2. +read file as array of strings
 * 3. +remove all comments and whitespaces
-* 4. build symbol table
+* 4. +build symbol table
 * 5. translate each string to hack code
 * 6. write result into .hack file
 */

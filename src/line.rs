@@ -1,5 +1,5 @@
 pub struct Line {
-    inner: String,
+    pub inner: String,
     pub number: usize
 }
 
@@ -14,6 +14,10 @@ impl Line {
     pub fn is_a(&self) -> bool {
         return self.inner.starts_with(Line::A_MARKER) &&
             self.inner.to_uppercase() != self.inner // TODO: check if string is lowcase, should be simplified
+    }
+
+    pub fn is_c(&self) -> bool {
+        return !self.is_a()
     }
 
     pub fn is_label(&self) -> bool {
