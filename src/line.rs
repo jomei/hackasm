@@ -52,7 +52,7 @@ mod tests {
     use super::*;
 
     fn get_a() -> Line {
-        return Line::new("@R1".to_string(), 0)
+        return Line::new("@some_var".to_string(), 0)
     }
 
     #[test]
@@ -62,7 +62,7 @@ mod tests {
 
     #[test]
     fn a_symbol() {
-        assert_eq!(get_a().a_symbol(), "R1");
+        assert_eq!(get_a().a_symbol(), "some_var");
     }
 
     fn get_c() -> Line {

@@ -10,7 +10,7 @@ pub fn call<R: Read>(content: R) -> Vec<Line> {
     return BufReader::new(content)
         .lines()
         .map(|l| l.expect("Could not parse line").trim().to_string())
-        .filter(|l| l.is_empty() || l.starts_with("//"))
+        .filter(|l| !(l.is_empty() || l.starts_with("//")))
         .enumerate()
         .map(|(i, line)| Line::new(line, i))
         .collect();

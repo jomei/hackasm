@@ -1,5 +1,5 @@
-mod line;
-mod reader;
+pub mod line;
+pub mod reader;
 pub mod symbol_table;
 
 #[macro_use]
