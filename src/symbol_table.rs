@@ -43,7 +43,7 @@ impl Builder {
         Builder { start_memory: 1024, counter: 0}
     }
 
-    pub fn call(&mut self, lines: Vec<Line>) -> HashMap<String, usize> {
+    pub fn call(&mut self, lines: &Vec<Line>) -> HashMap<String, usize> {
         let mut result = KNOWN_SYMBOLS.clone();
         for line in lines.iter() {
             if line.is_symbol() {

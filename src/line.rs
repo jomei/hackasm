@@ -16,10 +16,6 @@ impl Line {
             self.inner.to_uppercase() != self.inner // TODO: check if string is lowcase, should be simplified
     }
 
-    pub fn is_c(&self) -> bool {
-        return !self.is_a()
-    }
-
     pub fn is_label(&self) -> bool {
         return self.inner.starts_with(Line::LABEL_MARKER)
     }
@@ -38,6 +34,31 @@ impl Line {
         } else {
             return Some(self.label_symbol())
         }
+    }
+
+    pub fn get_jump(&self) -> String {
+        let split: Vec<&str> = self.inner.split(";").collect();
+        if split.len() > 1 {
+            return split[1].to_string()
+        } else {
+            return "".to_string()
+        }
+    }
+
+    pub fn get_comp(&self) -> String {
+        let split: Vec<&str> = self.inner.split(";").collect();
+        let dest_comp: Vec<&str> = split[0].split("=").collect();
+        if dest_comp.len() > 1 {
+            return dest_comp[1].to_string()
+        } else {
+            return "".to_string()
+        }
+    }
+
+    pub fn get_dest(&self) -> String {
+        let split: Vec<&str> = self.inner.split(";").collect();
+        let dest_comp: Vec<&str> = split[0].split("=").collect();
+        return dest_comp[0].to_string()
     }
 
     fn a_symbol(&self) -> String {

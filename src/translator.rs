@@ -4,7 +4,7 @@ use std::collections::HashMap;
 lazy_static! {
     static ref JUMP: HashMap<&'static str, &'static str> = {
         let mut map = HashMap::new();
-        map.insert("null", "000");
+        map.insert("", "000");
         map.insert("JGT", "001");
         map.insert("JEQ", "010");
         map.insert("JGE", "011");
@@ -17,7 +17,7 @@ lazy_static! {
 
     static ref DEST: HashMap<&'static str, &'static str> = {
         let mut map = HashMap::new();
-        map.insert("null", "000");
+        map.insert("", "000");
         map.insert("M",   "001");
         map.insert("D",   "010");
         map.insert("MD",  "011");
@@ -65,38 +65,61 @@ lazy_static! {
     };
 }
 
-pub fn call(line: Line, symbol_table: &HashMap<String, usize>) -> String {
+pub fn call(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
     if line.is_a() {
        return translate_a(line, symbol_table)
     } else {
-        return translate_c(line, symbol_table)
+        return translate_c(line)
     }
 }
 
-fn translate_a(line: Line, symbol_table: &HashMap<String, usize>) -> String {
+fn translate_a(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
     let value = symbol_table.get(&line.symbol().unwrap()).expect("symbol not found");
     let binary = format!("{:016b}", value);
-    return format!("@{}", binary)
+    return binary
 }
 
-fn translate_c(line: Line, symbol_table: &HashMap<String, usize>) -> String {
-    let inner = line.inner;
-    let first_split:Vec<&str> = inner.split("=").collect();
-    let second_split:Vec<&str> = first_split[1].split(";").collect();
+fn translate_c(line: &Line) -> String {
+    let a_bit;
+    let comp;
 
-    let mut  a_bit;
-    let mut comp;
-
-    if COMP0.contains_key(second_split[0]) {
+    if COMP0.contains_key::<str>(&line.get_comp()) {
         a_bit = "0";
-        comp = COMP0.get(second_split[0]).expect("Unexpected operand");
+        comp = COMP0.get::<str>(&line.get_comp()).expect("Unexpected operand");
     } else {
         a_bit = "1";
-        comp = COMP1.get(second_split[0]).expect("Unexpected operand");
+        comp = COMP1.get::<str>(&line.get_comp()).expect("Unexpected operand");
     }
 
-    let dest = DEST.get(first_split[0]).expect("Unexpected operand");
-    let jump = JUMP.get(second_split[1]).expect("Unexpected operand");
+    let dest = DEST.get::<str>(&line.get_dest()).expect("Unexpected operand");
+    let jump = JUMP.get::<str>(&line.get_jump()).expect("Unexpected operand");
 
     return format!("111{}{}{}{}", a_bit, comp, dest, jump);
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use line::Line;
+    use translator;
+
+    fn symbol_table() -> HashMap<String, usize> {
+        let mut table = HashMap::new();
+        table.insert("some_var".to_string(), 16);
+        return table
+    }
+
+    #[test]
+    fn a_instruction() {
+        let line = Line::new("@some_var".to_string(), 0);
+        let result = translator::call(line, &symbol_table());
+        assert_eq!("0000000000010000", result)
+    }
+
+    #[test]
+    fn c_instruction() {
+        let line = Line::new("MD=D+1".to_string(), 0);
+        let result = translator::call(line, &symbol_table());
+        assert_eq!("1110011111011000", result)
+    }
 }
