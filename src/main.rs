@@ -17,6 +17,6 @@ fn main() {
 
     HackAsm::compile(file)
         .iter()
-        .map(|l| writer.call(l.to_string()));
+        .for_each(|l| writer.call(l.to_string()));
 }
 

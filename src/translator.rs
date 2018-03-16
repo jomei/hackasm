@@ -34,6 +34,7 @@ lazy_static! {
         map.insert("1", "111111");
         map.insert("-1", "111010");
         map.insert("D", "001100");
+        map.insert("A", "110000");
         map.insert("!D", "001101");
         map.insert("!A", "110001");
         map.insert("-D", "001111");
@@ -82,20 +83,25 @@ fn translate_a(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
 fn translate_c(line: &Line) -> String {
     let a_bit;
     let comp;
-
     if COMP0.contains_key::<str>(&line.get_comp()) {
         a_bit = "0";
-        comp = COMP0.get::<str>(&line.get_comp()).expect("Unexpected operand");
+        comp = COMP0.get::<str>(&line.get_comp())
+            .expect(&format!("Unexpected comp operand: {}", &line.get_comp()));
     } else {
         a_bit = "1";
-        comp = COMP1.get::<str>(&line.get_comp()).expect("Unexpected operand");
+        comp = COMP1.get::<str>(&line.get_comp())
+            .expect(&format!("Unexpected comp operand: {}", &line.get_comp()));
     }
 
-    let dest = DEST.get::<str>(&line.get_dest()).expect("Unexpected operand");
-    let jump = JUMP.get::<str>(&line.get_jump()).expect("Unexpected operand");
+    let dest = DEST.get::<str>(&line.get_dest())
+        .expect(&format!("Unexpected dest operand: {}", &line.get_dest()));
+
+    let jump = JUMP.get::<str>(&line.get_jump())
+        .expect(&format!("Unexpected jump operand: {}", &line.get_jump()));
 
     return format!("111{}{}{}{}", a_bit, comp, dest, jump);
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -112,14 +118,21 @@ mod tests {
     #[test]
     fn a_instruction() {
         let line = Line::new("@some_var".to_string(), 0);
-        let result = translator::call(line, &symbol_table());
+        let result = translator::call(&line, &symbol_table());
         assert_eq!("0000000000010000", result)
     }
 
     #[test]
     fn c_instruction() {
         let line = Line::new("MD=D+1".to_string(), 0);
-        let result = translator::call(line, &symbol_table());
+        let result = translator::call(&line, &symbol_table());
+        assert_eq!("1110011111011000", result)
+    }
+
+    #[test]
+    fn c_instruction_1() {
+        let line = Line::new("D=A".to_string(), 0);
+        let result = translator::call(&line, &symbol_table());
         assert_eq!("1110011111011000", result)
     }
 }
