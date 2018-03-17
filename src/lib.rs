@@ -20,8 +20,9 @@ impl HackAsm {
          println!("Lines read: {}", lines.len());
          let translated:Vec<String> = lines
              .iter()
+             .filter(|l| !l.is_label())
              .map(|l| translator::call(l, &table).to_string())
-             .map(|l| {println!("{}",  l); l})
+//             .map(|l| {println!("{}",  l); l})
              .collect();
          println!("Lines translated: {}", translated.len());
          translated

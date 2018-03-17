@@ -18,6 +18,7 @@ lazy_static! {
     static ref DEST: HashMap<&'static str, &'static str> = {
         let mut map = HashMap::new();
         map.insert("", "000");
+        map.insert("0", "000");
         map.insert("M",   "001");
         map.insert("D",   "010");
         map.insert("MD",  "011");
@@ -67,6 +68,7 @@ lazy_static! {
 }
 
 pub fn call(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
+    println!("{}", line.inner);
     if line.is_a() {
        return translate_a(line, symbol_table)
     } else {
@@ -86,18 +88,18 @@ fn translate_c(line: &Line) -> String {
     if COMP0.contains_key::<str>(&line.get_comp()) {
         a_bit = "0";
         comp = COMP0.get::<str>(&line.get_comp())
-            .expect(&format!("Unexpected comp operand: {}", &line.get_comp()));
+            .expect(&format!("Unexpected comp operand: {} at line {}", &line.get_comp(), line.number));
     } else {
         a_bit = "1";
         comp = COMP1.get::<str>(&line.get_comp())
-            .expect(&format!("Unexpected comp operand: {}", &line.get_comp()));
+            .expect(&format!("Unexpected comp operand: {} at line {}", &line.get_comp(), line.number));
     }
 
     let dest = DEST.get::<str>(&line.get_dest())
-        .expect(&format!("Unexpected dest operand: {}", &line.get_dest()));
+        .expect(&format!("Unexpected dest operand: {} at line {}", &line.get_dest(), line.number));
 
     let jump = JUMP.get::<str>(&line.get_jump())
-        .expect(&format!("Unexpected jump operand: {}", &line.get_jump()));
+        .expect(&format!("Unexpected jump operand: {} at line {}", &line.get_jump(), line.number));
 
     return format!("111{}{}{}{}", a_bit, comp, dest, jump);
 }

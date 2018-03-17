@@ -50,7 +50,7 @@ impl Line {
         if dest_comp.len() > 1 {
             dest_comp[1].to_string()
         } else {
-            "".to_string()
+            dest_comp[0].to_string()
         }
     }
 
@@ -119,5 +119,12 @@ mod tests {
     fn get_dest() {
         let line =  Line::new("D=A".to_string(), 0);
         assert_eq!("D", line.get_dest())
+    }
+
+    #[test]
+    fn get_jump() {
+        let line =  Line::new("D;JGT".to_string(), 0);
+        assert_eq!("D", line.get_comp());
+        assert_eq!("JGT", line.get_jump());
     }
 }
