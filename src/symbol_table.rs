@@ -18,10 +18,8 @@ lazy_static! {
         map.insert("R11".to_string(), 11);
         map.insert("R12".to_string(), 12);
         map.insert("R13".to_string(), 13);
-        map.insert("R13".to_string(), 13);
-        map.insert("R13".to_string(), 13);
-        map.insert("R14".to_string(), 13);
-        map.insert("R15".to_string(), 13);
+        map.insert("R14".to_string(), 14);
+        map.insert("R15".to_string(), 15);
         map.insert("SCREEN".to_string(), 16384);
         map.insert("KBD".to_string(), 24576);
         map.insert("SP".to_string(), 0);
@@ -40,16 +38,28 @@ pub struct Builder {
 
 impl Builder {
     pub fn new() -> Self {
-        Builder { start_memory: 1024, counter: 0}
+        Builder { start_memory: 16, counter: 0}
     }
 
     pub fn call(&mut self, lines: &Vec<Line>) -> HashMap<String, usize> {
         let mut result = KNOWN_SYMBOLS.clone();
+
+        let labels:Vec<&Line> = lines
+            .iter()
+            .filter(|inst| inst.is_label())
+            .collect();
+
+        for label in labels.iter() {
+            println!("add label {}", label.symbol().unwrap());
+            result.insert(label.symbol().unwrap(), label.number);
+        }
+
         for line in lines.iter() {
             if line.is_symbol() {
                 let sym = line.symbol().unwrap();
                 if !result.contains_key(&sym) {
-                    result.insert(sym, self.gen_value(line));
+                    println!("add symbol {}", line.symbol().unwrap());
+                    result.insert(sym, self.gen_a());
                 }
             }
 
@@ -58,13 +68,6 @@ impl Builder {
         return result;
     }
 
-    fn gen_value(&mut self, line: &Line) -> usize {
-        if line.is_a() {
-            return self.gen_a()
-        } else {
-            return line.number + 1
-        }
-    }
 
     fn gen_a(&mut self) -> usize {
         let a = self.start_memory + self.counter;

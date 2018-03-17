@@ -61,6 +61,7 @@ lazy_static! {
         map.insert("M-1", "110010");
         map.insert("D+M", "000010");
         map.insert("D-M", "010011");
+        map.insert("M-D", "000111");
         map.insert("D&M", "000000");
         map.insert("D|M", "010101");
         map
@@ -77,7 +78,11 @@ pub fn call(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
 }
 
 fn translate_a(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
-    let value = symbol_table.get(&line.symbol().unwrap()).expect("symbol not found");
+    let value = if line.is_variable() {
+        *symbol_table.get(&line.symbol().unwrap()).expect("symbol not found")
+    } else {
+        line.int_value()
+    };
     let binary = format!("{:016b}", value);
     return binary
 }
@@ -135,6 +140,6 @@ mod tests {
     fn c_instruction_1() {
         let line = Line::new("D=A".to_string(), 0);
         let result = translator::call(&line, &symbol_table());
-        assert_eq!("1110011111011000", result)
+        assert_eq!("1110110000010000", result)
     }
 }

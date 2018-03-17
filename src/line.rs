@@ -20,14 +20,22 @@ impl Line {
     }
 
     pub fn is_symbol(&self) -> bool {
-        self.is_a() || self.is_label()
+        self.is_variable() && (self.is_a() || self.is_label())
     }
 
-    pub fn symbol(&self) -> Option<String> {
-        if !self.is_symbol() {
-            return None
+    pub fn is_variable(&self) -> bool {
+        match self.symbol().unwrap().parse::<usize>() {
+            Ok(_) => false,
+            Err(_) => true,
         }
+    }
 
+    pub fn int_value(&self) -> usize {
+        self.symbol().unwrap().parse::<usize>().unwrap()
+    }
+
+    // todo: remove option
+    pub fn symbol(&self) -> Option<String> {
         if self.is_a() {
             Some(self.a_symbol())
         } else {
@@ -57,7 +65,12 @@ impl Line {
     pub fn get_dest(&self) -> String {
         let split: Vec<&str> = self.inner.split(";").collect();
         let dest_comp: Vec<&str> = split[0].split("=").collect();
-        dest_comp[0].to_string()
+        if dest_comp.len() > 1 {
+            dest_comp[0].to_string()
+        } else {
+            "".to_string()
+        }
+
     }
 
     fn a_symbol(&self) -> String {
@@ -101,6 +114,14 @@ mod tests {
     #[test]
     fn label_symbol() {
         assert_eq!(get_c().label_symbol(), "LOOP");
+    }
+
+    #[test]
+    fn symbol() {
+        let l1 = Line::new("(LOOP)".to_string(), 0);
+        let l2 = Line::new("@LOOP".to_string(), 0);
+        assert_eq!(l1.symbol().unwrap(), l2.symbol().unwrap());
+        assert_eq!(l1.symbol().unwrap(), "LOOP");
     }
 
     #[test]
