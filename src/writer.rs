@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::PathBuf;
 use std::fs::File;
 use std::io::Write;
 
@@ -17,8 +17,9 @@ impl Writer {
     }
 
     fn create_file(path: String) -> File {
-        let p = Path::new(&path);
-        let path = format!("{:?}.hack", p.file_stem().unwrap());
-        File::create(path).expect("Cannot open the .hack file")
+        let mut file_name = PathBuf::from(&path);
+        file_name.set_extension("hack");
+
+        File::create(file_name).expect("Cannot open the .hack file")
     }
 }
