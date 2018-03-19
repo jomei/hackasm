@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use line::Line;
+use instruction::Instruction;
 
 lazy_static! {
     static ref KNOWN_SYMBOLS: HashMap<String, usize> = {
@@ -41,10 +41,10 @@ impl Builder {
         Builder { start_memory: 16, counter: 0}
     }
 
-    pub fn call(&mut self, lines: &Vec<Line>) -> HashMap<String, usize> {
+    pub fn call(&mut self, lines: &Vec<Instruction>) -> HashMap<String, usize> {
         let mut result = KNOWN_SYMBOLS.clone();
 
-        let labels:Vec<&Line> = lines
+        let labels:Vec<&Instruction> = lines
             .iter()
             .filter(|inst| inst.is_label())
             .collect();

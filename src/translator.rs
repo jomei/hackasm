@@ -1,4 +1,4 @@
-use line::Line;
+use instruction::Instruction;
 use std::collections::HashMap;
 
 lazy_static! {
@@ -68,7 +68,7 @@ lazy_static! {
     };
 }
 
-pub fn call(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
+pub fn call(line: &Instruction, symbol_table: &HashMap<String, usize>) -> String {
     println!("{}", line.inner);
     if line.is_a() {
        return translate_a(line, symbol_table)
@@ -77,7 +77,7 @@ pub fn call(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
     }
 }
 
-fn translate_a(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
+fn translate_a(line: &Instruction, symbol_table: &HashMap<String, usize>) -> String {
     let value = if line.is_variable() {
         *symbol_table.get(&line.symbol().unwrap()).expect("symbol not found")
     } else {
@@ -87,7 +87,7 @@ fn translate_a(line: &Line, symbol_table: &HashMap<String, usize>) -> String {
     return binary
 }
 
-fn translate_c(line: &Line) -> String {
+fn translate_c(line: &Instruction) -> String {
     let a_bit;
     let comp;
     if COMP0.contains_key::<str>(&line.get_comp()) {
@@ -113,7 +113,7 @@ fn translate_c(line: &Line) -> String {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    use line::Line;
+    use instruction::Instruction;
     use translator;
 
     fn symbol_table() -> HashMap<String, usize> {
@@ -124,21 +124,21 @@ mod tests {
 
     #[test]
     fn a_instruction() {
-        let line = Line::new("@some_var".to_string(), 0);
+        let line = Instruction::new("@some_var".to_string(), 0);
         let result = translator::call(&line, &symbol_table());
         assert_eq!("0000000000010000", result)
     }
 
     #[test]
     fn c_instruction() {
-        let line = Line::new("MD=D+1".to_string(), 0);
+        let line = Instruction::new("MD=D+1".to_string(), 0);
         let result = translator::call(&line, &symbol_table());
         assert_eq!("1110011111011000", result)
     }
 
     #[test]
     fn c_instruction_1() {
-        let line = Line::new("D=A".to_string(), 0);
+        let line = Instruction::new("D=A".to_string(), 0);
         let result = translator::call(&line, &symbol_table());
         assert_eq!("1110110000010000", result)
     }

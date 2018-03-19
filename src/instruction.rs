@@ -1,22 +1,22 @@
-pub struct Line {
+pub struct Instruction {
     pub inner: String,
     pub number: usize
 }
 
-impl Line {
+impl Instruction {
     const A_MARKER: char = '@';
     const LABEL_MARKER: char = '(';
 
     pub fn new(str: String, line_number: usize) -> Self {
-        Line{ inner: str, number: line_number }
+        Instruction{ inner: str, number: line_number }
     }
 
     pub fn is_a(&self) -> bool {
-        self.inner.starts_with(Line::A_MARKER)
+        self.inner.starts_with(Instruction::A_MARKER)
     }
 
     pub fn is_label(&self) -> bool {
-        self.inner.starts_with(Line::LABEL_MARKER)
+        self.inner.starts_with(Instruction::LABEL_MARKER)
     }
 
     pub fn is_symbol(&self) -> bool {
@@ -79,7 +79,7 @@ impl Line {
 
     fn label_symbol(&self) -> String {
         return self.inner
-            .split(|c| c == Line::LABEL_MARKER || c == ')')
+            .split(|c| c == Instruction::LABEL_MARKER || c == ')')
             .collect()
     }
 }
@@ -88,8 +88,8 @@ impl Line {
 mod tests {
     use super::*;
 
-    fn get_a() -> Line {
-        Line::new("@some_var".to_string(), 0)
+    fn get_a() -> Instruction {
+        Instruction::new("@some_var".to_string(), 0)
     }
 
     #[test]
@@ -102,8 +102,8 @@ mod tests {
         assert_eq!(get_a().a_symbol(), "some_var");
     }
 
-    fn get_c() -> Line {
-        return Line::new("(LOOP)".to_string(), 0);
+    fn get_c() -> Instruction {
+        return Instruction::new("(LOOP)".to_string(), 0);
     }
 
     #[test]
@@ -118,8 +118,8 @@ mod tests {
 
     #[test]
     fn symbol() {
-        let l1 = Line::new("(LOOP)".to_string(), 0);
-        let l2 = Line::new("@LOOP".to_string(), 0);
+        let l1 = Instruction::new("(LOOP)".to_string(), 0);
+        let l2 = Instruction::new("@LOOP".to_string(), 0);
         assert_eq!(l1.symbol().unwrap(), l2.symbol().unwrap());
         assert_eq!(l1.symbol().unwrap(), "LOOP");
     }
@@ -132,19 +132,19 @@ mod tests {
 
     #[test]
     fn get_comp() {
-        let line =  Line::new("D=A".to_string(), 0);
+        let line =  Instruction::new("D=A".to_string(), 0);
         assert_eq!("A", line.get_comp())
     }
 
     #[test]
     fn get_dest() {
-        let line =  Line::new("D=A".to_string(), 0);
+        let line =  Instruction::new("D=A".to_string(), 0);
         assert_eq!("D", line.get_dest())
     }
 
     #[test]
     fn get_jump() {
-        let line =  Line::new("D;JGT".to_string(), 0);
+        let line =  Instruction::new("D;JGT".to_string(), 0);
         assert_eq!("D", line.get_comp());
         assert_eq!("JGT", line.get_jump());
     }

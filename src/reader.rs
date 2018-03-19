@@ -2,8 +2,6 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 
-use line::Line;
-
 const COMMENT_MARKER: &str = "//";
 
 // из за того что есть Read, можно подложить что угодно, имплементирующее  Read, например Cursor

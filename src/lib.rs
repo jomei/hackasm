@@ -1,4 +1,4 @@
-mod line;
+mod instruction;
 mod reader;
 mod parser;
 mod symbol_table;
@@ -10,7 +10,7 @@ extern crate lazy_static;
 
 use std::io::Read;
 use symbol_table::Builder;
-use line::Line;
+use instruction::Instruction;
 
 
 pub struct HackAsm {}
@@ -19,17 +19,17 @@ impl HackAsm {
      pub fn compile<R: Read>(content: R) -> Vec<String> {
          let lines = reader::call(content);
 
-         let instructions: Vec<Line> = parser::call(lines);
+         let instructions: Vec<Instruction> = parser::call(lines);
 
          let table = Builder::new().call(&instructions);
-         println!("Lines read: {}", instructions.len());
+         println!("Instructions read: {}", instructions.len());
          let translated:Vec<String> = instructions
              .iter()
              .filter(|l| !l.is_label())
              .map(|l| translator::call(l, &table).to_string())
              .map(|l| {println!("{}",  l); l})
              .collect();
-         println!("Lines translated: {}", translated.len());
+         println!("Instructions translated: {}", translated.len());
          translated
     }
 }
